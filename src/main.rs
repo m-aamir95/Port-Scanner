@@ -29,7 +29,7 @@ impl Arguments{
             //Maybe the token is -j to specify the number of jobs and not the IP
             //Or maybe its for help
             match token {
-                "-j"|"--jobs" => {
+                "-j"|"--jobs" if args.len() == 4=> {
 
                     //Next token will hold num threads
                     let num_threads = &args[2];
