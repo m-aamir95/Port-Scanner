@@ -3,6 +3,7 @@
 use std::env;
 use std::net::IpAddr;
 use std::str::FromStr;
+use std::process;
 
 #[derive(Debug)]
 struct Arguments {
@@ -14,22 +15,26 @@ struct Arguments {
 impl Arguments{
     fn new(args : &[String]) -> Result<Arguments, String>{
 
-    if args.len() < 2 {
-        return Err("too few arguments, IP address is mandatory".parse().unwrap());
-    }else if args.len() > 4 {
-        return Err("too many arguments please see help e.g, -h".parse().unwrap());
-    }
+        if args.len() < 2 { //At least has to have, ["program_name", "192.168.8.1"]
+            return Err("too few arguments, IP address is mandatory".parse().unwrap());
 
-    // Check if the first token is an IP address
-    let token = args[1].as_str();
+        }else if args.len() > 4 {//At max, can't have more than the following arguments.
+                                //["program_name", "-j|-h", "4", "192.168.8.1"
+
+            return Err("too many arguments please see help e.g, -h".parse().unwrap());
+        }
+
+        // Check if the first token is an IP address
+        let token = args[1].as_str();
+
         if let Ok(ip) = IpAddr::from_str(token){
             return Ok(Arguments{ip_addr: ip, num_threads: 4, flag : String::from(" ") });
         }else{
 
             //Maybe the token is -j to specify the number of jobs and not the IP
-            //Or maybe its for help
+            //Or maybe it's for help
             match token {
-                "-j"|"--jobs" if args.len() == 4=> {
+                "-j"|"--jobs" if args.len() == 4 => {
 
                     //Next token will hold num threads
                     let num_threads = &args[2];
@@ -44,14 +49,17 @@ impl Arguments{
                     }else{
                         Err("Not a valid num jobs/threads".parse().unwrap())
                     }
-                }
+                },
+                "-j|--jobs" => {
+                    Err("Please specify Number of Jobs and IP address".parse().unwrap())
+                },
                 "-h"|"--help" if args.len() == 2 => {
                     println!("Usage: -j or --jobs to specify number of threads, and -h or --help to get help");
-                    Err(" ".parse().unwrap())
-                }
+                    Err("no_error".parse().unwrap())
+                },
                 _ => {
                     println!("Usage: -j or --jobs to specify number of threads, and -h or --help to get help");
-                    Err(" ".parse().unwrap())
+                    Err("no_error".parse().unwrap())
                 }
             }
         }
@@ -61,7 +69,19 @@ impl Arguments{
 fn main() {
 
     let cli_args : Vec<String> = env::args().collect();
-    let parsed_args = Arguments::new(&cli_args);
 
-    println!("{:?}", parsed_args);
+    match Arguments::new(&cli_args){
+        Ok(args) => {
+            process::exit(0);
+        },
+        Err(err) => {
+            if err == "no_error" {
+                process::exit(0)
+            }
+            eprintln!("Error: {}", err)
+        },
+        _ => {process::exit(0)}
+    }
+
+
 }
