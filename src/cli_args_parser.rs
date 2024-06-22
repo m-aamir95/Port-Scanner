@@ -3,9 +3,9 @@ use std::str::FromStr;
 
 #[derive(Debug)]
 pub struct Arguments {
-    ip_addr: IpAddr,
-    num_threads : u16,
-    flag : String
+    pub ip_addr: IpAddr,
+    pub num_threads : u16,
+    pub flag : String
 }
 
 impl Arguments{
@@ -24,7 +24,7 @@ impl Arguments{
         let token = args[1].as_str();
 
         if let Ok(ip) = IpAddr::from_str(token){
-            return Ok(Arguments{ip_addr: ip, num_threads: 4, flag : String::from(" ") });
+            return Ok(Arguments{ip_addr: ip, num_threads: 1000, flag : String::from(" ") });
         }else{
 
             //Maybe the token is -j to specify the number of jobs and not the IP
