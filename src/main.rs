@@ -17,7 +17,7 @@ fn main() {
 
     match Arguments::new(&cli_args){
         Ok(args) => {
-            let open_ports = scan_ports(& args);
+            let open_ports = scan_ports(args);
             for open_port in open_ports{
                 println!("{}", open_port);
             }
